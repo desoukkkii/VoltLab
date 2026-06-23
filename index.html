@@ -1,137 +1,496 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Logic Circuit Simulator</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0b0d12" />
+    <meta
+      name="description"
+      content="A modern, production-grade digital logic circuit simulator. Design, wire, and simulate gates, adders, decoders and more — right in your browser."
+    />
+    <title>Logiq — Digital Logic Circuit Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
     <div id="app">
-        <header id="toolbar">
-            <div class="toolbar-left">
-                <span class="toolbar-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A84FF" stroke-width="2">
-                        <path d="M9 3v18M5 7l4-4 4 4M5 17l4 4 4-4M15 3v18M19 7l-4-4-4 4M19 17l-4 4-4-4"/>
-                    </svg>
-                </span>
-                <h1>Digital Logic Circuit Simulator</h1>
-            </div>
-            <div class="toolbar-center">
-                <button class="toolbar-btn" data-action="new">New Circuit</button>
-                <button class="toolbar-btn" data-action="save">Save Circuit</button>
-                <button class="toolbar-btn" data-action="load">Load Circuit</button>
-                <div class="toolbar-divider"></div>
-                <button class="toolbar-btn" data-action="clear">Clear</button>
-                <button class="toolbar-btn btn-primary" data-action="run">Start Clocks</button>
-            </div>
-            <div class="toolbar-right">
-                <div class="zoom-controls">
-                    <button class="toolbar-btn" data-action="zoom-out">−</button>
-                    <span id="zoom-level">100%</span>
-                    <button class="toolbar-btn" data-action="zoom-in">+</button>
-                    <div class="toolbar-divider"></div>
-                    <button class="toolbar-btn" data-action="fit">Fit</button>
-                </div>
-            </div>
-        </header>
-
-        <main id="main">
-            <aside id="sidebar">
-                <div class="sidebar-section">
-                    <h3>Inputs</h3>
-                    <div class="component-list">
-                        <div class="sidebar-item" data-type="toggle-switch">Toggle Switch</div>
-                        <div class="sidebar-item" data-type="push-button">Push Button</div>
-                        <div class="sidebar-item" data-type="clock">Clock</div>
-                    </div>
-                </div>
-                <div class="sidebar-section">
-                    <h3>Outputs</h3>
-                    <div class="component-list">
-                        <div class="sidebar-item" data-type="led">LED</div>
-                        <div class="sidebar-item" data-type="lamp">Lamp</div>
-                        <div class="sidebar-item" data-type="seven-segment">7-Segment Display</div>
-                    </div>
-                </div>
-                <div class="sidebar-section">
-                    <h3>Logic Gates</h3>
-                    <div class="component-list">
-                        <div class="sidebar-item" data-type="and">AND</div>
-                        <div class="sidebar-item" data-type="or">OR</div>
-                        <div class="sidebar-item" data-type="not">NOT</div>
-                        <div class="sidebar-item" data-type="nand">NAND</div>
-                        <div class="sidebar-item" data-type="nor">NOR</div>
-                        <div class="sidebar-item" data-type="xor">XOR</div>
-                        <div class="sidebar-item" data-type="xnor">XNOR</div>
-                    </div>
-                </div>
-                <div class="sidebar-section">
-                    <h3>Advanced</h3>
-                    <div class="component-list">
-                        <div class="sidebar-item" data-type="half-adder">Half Adder</div>
-                        <div class="sidebar-item" data-type="full-adder">Full Adder</div>
-                        <div class="sidebar-item" data-type="multiplexer">Multiplexer</div>
-                        <div class="sidebar-item" data-type="decoder">Decoder</div>
-                        <div class="sidebar-item" data-type="encoder">Encoder</div>
-                    </div>
-                </div>
-                <div class="sidebar-section">
-                    <h3>Examples</h3>
-                    <div class="component-list">
-                        <div class="sidebar-item example-item" data-example="half-adder">Half Adder</div>
-                        <div class="sidebar-item example-item" data-example="full-adder">Full Adder</div>
-                        <div class="sidebar-item example-item" data-example="xor-gate">XOR Gate</div>
-                        <div class="sidebar-item example-item" data-example="sr-latch">SR Latch</div>
-                        <div class="sidebar-item example-item" data-example="4bit-counter">4-bit Counter</div>
-                    </div>
-                </div>
-            </aside>
-
-            <section id="workspace" class="workspace">
-                <div id="workspace-stage">
-                    <svg id="wire-layer"></svg>
-                    <div id="component-layer"></div>
-                </div>
-                <div id="selection-box"></div>
-                <div id="wire-drag-indicator">
-                    <svg><line id="drag-line" stroke="#0A84FF" stroke-width="2" stroke-dasharray="5,3"/></svg>
-                </div>
-            </section>
-
-            <aside id="properties-panel">
-                <div class="properties-header">
-                    <h3>Properties</h3>
-                </div>
-                <div class="properties-body" id="properties-body">
-                    <p class="no-selection">Select a component to edit its properties</p>
-                </div>
-            </aside>
-        </main>
-    </div>
-
-    <div id="save-modal" class="modal-overlay" style="display:none">
-        <div class="modal">
-            <h2>Save Circuit</h2>
-            <input type="text" id="save-name-input" placeholder="Enter circuit name..." autocomplete="off" />
-            <p id="save-error" class="modal-error"></p>
-            <div class="modal-actions">
-                <button class="modal-btn" data-action="cancel-save">Cancel</button>
-                <button class="modal-btn btn-primary" data-action="confirm-save">Save</button>
-            </div>
+      <header id="toolbar" role="banner">
+        <div class="toolbar-left">
+          <span class="toolbar-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <defs>
+                <linearGradient
+                  id="lg"
+                  x1="0"
+                  y1="0"
+                  x2="24"
+                  y2="24"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop offset="0%" stop-color="#60A5FA" />
+                  <stop offset="100%" stop-color="#7C3AED" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M5 6h4a4 4 0 0 1 0 8H7v6H4V4h5a6 6 0 0 1 0 12"
+                stroke="url(#lg)"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+              <circle cx="19" cy="6" r="2.2" fill="url(#lg)" />
+              <circle cx="19" cy="18" r="2.2" fill="url(#lg)" />
+            </svg>
+          </span>
+          <div class="brand">
+            <h1>Logiq <span class="brand-sub">Circuit Simulator</span></h1>
+          </div>
         </div>
-    </div>
-
-    <div id="load-modal" class="modal-overlay" style="display:none">
-        <div class="modal">
-            <h2>Load Circuit</h2>
-            <div id="saved-circuits-list"></div>
-            <div class="modal-actions">
-                <button class="modal-btn" data-action="cancel-load">Cancel</button>
-            </div>
+        <div class="toolbar-center" role="toolbar" aria-label="Circuit actions">
+          <button
+            class="toolbar-btn"
+            data-action="new"
+            title="Start a new circuit (Ctrl+N)"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            <span>New</span>
+          </button>
+          <button
+            class="toolbar-btn"
+            data-action="save"
+            title="Save circuit (Ctrl+S)"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+              />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+            <span>Save</span>
+          </button>
+          <button
+            class="toolbar-btn"
+            data-action="load"
+            title="Load saved circuit (Ctrl+O)"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 7h6l2 2h10v10a2 2 0 0 1-2 2H3z" />
+            </svg>
+            <span>Load</span>
+          </button>
+          <div class="toolbar-divider" aria-hidden="true"></div>
+          <button
+            class="toolbar-btn"
+            data-action="clear"
+            title="Clear workspace"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            </svg>
+            <span>Clear</span>
+          </button>
+          <button
+            class="toolbar-btn btn-primary"
+            data-action="run"
+            title="Start / stop clock components"
+          >
+            <svg
+              class="icon-play"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            <span>Start Clocks</span>
+          </button>
         </div>
+        <div class="toolbar-right">
+          <div class="zoom-controls" role="group" aria-label="Zoom controls">
+            <button
+              class="toolbar-btn icon-btn"
+              data-action="zoom-out"
+              aria-label="Zoom out"
+            >
+              −
+            </button>
+            <span id="zoom-level" aria-live="polite">100%</span>
+            <button
+              class="toolbar-btn icon-btn"
+              data-action="zoom-in"
+              aria-label="Zoom in"
+            >
+              +
+            </button>
+            <div class="toolbar-divider" aria-hidden="true"></div>
+            <button class="toolbar-btn" data-action="fit" title="Fit to view">
+              Fit
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main id="main">
+        <aside id="sidebar" aria-label="Component library">
+          <div class="sidebar-section">
+            <h3>Inputs</h3>
+            <div class="component-list">
+              <div
+                class="sidebar-item"
+                data-type="toggle-switch"
+                tabindex="0"
+                role="button"
+              >
+                Toggle Switch
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="push-button"
+                tabindex="0"
+                role="button"
+              >
+                Push Button
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="clock"
+                tabindex="0"
+                role="button"
+              >
+                Clock
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-section">
+            <h3>Outputs</h3>
+            <div class="component-list">
+              <div
+                class="sidebar-item"
+                data-type="led"
+                tabindex="0"
+                role="button"
+              >
+                LED
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="lamp"
+                tabindex="0"
+                role="button"
+              >
+                Lamp
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="seven-segment"
+                tabindex="0"
+                role="button"
+              >
+                7-Segment Display
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-section">
+            <h3>Logic Gates</h3>
+            <div class="component-list">
+              <div
+                class="sidebar-item"
+                data-type="and"
+                tabindex="0"
+                role="button"
+              >
+                AND
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="or"
+                tabindex="0"
+                role="button"
+              >
+                OR
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="not"
+                tabindex="0"
+                role="button"
+              >
+                NOT
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="nand"
+                tabindex="0"
+                role="button"
+              >
+                NAND
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="nor"
+                tabindex="0"
+                role="button"
+              >
+                NOR
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="xor"
+                tabindex="0"
+                role="button"
+              >
+                XOR
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="xnor"
+                tabindex="0"
+                role="button"
+              >
+                XNOR
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-section">
+            <h3>Advanced</h3>
+            <div class="component-list">
+              <div
+                class="sidebar-item"
+                data-type="half-adder"
+                tabindex="0"
+                role="button"
+              >
+                Half Adder
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="full-adder"
+                tabindex="0"
+                role="button"
+              >
+                Full Adder
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="multiplexer"
+                tabindex="0"
+                role="button"
+              >
+                Multiplexer
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="decoder"
+                tabindex="0"
+                role="button"
+              >
+                Decoder
+              </div>
+              <div
+                class="sidebar-item"
+                data-type="encoder"
+                tabindex="0"
+                role="button"
+              >
+                Encoder
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-section">
+            <h3>Examples</h3>
+            <div class="component-list">
+              <div
+                class="sidebar-item example-item"
+                data-example="half-adder"
+                tabindex="0"
+                role="button"
+              >
+                Half Adder
+              </div>
+              <div
+                class="sidebar-item example-item"
+                data-example="full-adder"
+                tabindex="0"
+                role="button"
+              >
+                Full Adder
+              </div>
+              <div
+                class="sidebar-item example-item"
+                data-example="xor-gate"
+                tabindex="0"
+                role="button"
+              >
+                XOR Gate
+              </div>
+              <div
+                class="sidebar-item example-item"
+                data-example="sr-latch"
+                tabindex="0"
+                role="button"
+              >
+                SR Latch
+              </div>
+              <div
+                class="sidebar-item example-item"
+                data-example="4bit-counter"
+                tabindex="0"
+                role="button"
+              >
+                4-bit Counter
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-footer">
+            <p>
+              Tip: click a component, then click the canvas to place it. Drag
+              from an output pin to wire it up.
+            </p>
+          </div>
+        </aside>
+
+        <section
+          id="workspace"
+          class="workspace"
+          aria-label="Circuit workspace"
+        >
+          <div id="workspace-stage">
+            <svg id="wire-layer" aria-hidden="true"></svg>
+            <div id="component-layer"></div>
+          </div>
+          <div id="selection-box" aria-hidden="true"></div>
+          <div id="wire-drag-indicator" aria-hidden="true">
+            <svg>
+              <line
+                id="drag-line"
+                stroke="#60A5FA"
+                stroke-width="2"
+                stroke-dasharray="5,3"
+              />
+            </svg>
+          </div>
+          <div class="workspace-hint" aria-hidden="true">
+            <div class="hint-card">
+              <strong>Build something logical.</strong>
+              <span
+                >Pick a component from the left, click the canvas to place.
+                Scroll to zoom, drag empty space to pan.</span
+              >
+            </div>
+          </div>
+        </section>
+
+        <aside id="properties-panel" aria-label="Properties">
+          <div class="properties-header">
+            <h3>Properties</h3>
+          </div>
+          <div class="properties-body" id="properties-body">
+            <p class="no-selection">
+              Select a component to edit its properties.
+            </p>
+          </div>
+        </aside>
+      </main>
     </div>
 
-    <script src="script.js"></script>
-</body>
+    <div
+      id="save-modal"
+      class="modal-overlay"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="save-modal-title"
+    >
+      <div class="modal">
+        <h2 id="save-modal-title">Save Circuit</h2>
+        <p class="modal-sub">
+          Give your circuit a memorable name. You'll find it again under
+          <em>Load</em>.
+        </p>
+        <input
+          type="text"
+          id="save-name-input"
+          placeholder="e.g. 4-bit counter"
+          autocomplete="off"
+        />
+        <p id="save-error" class="modal-error" role="alert"></p>
+        <div class="modal-actions">
+          <button class="modal-btn" data-action="cancel-save">Cancel</button>
+          <button class="modal-btn btn-primary" data-action="confirm-save">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="load-modal"
+      class="modal-overlay"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="load-modal-title"
+    >
+      <div class="modal">
+        <h2 id="load-modal-title">Load Circuit</h2>
+        <p class="modal-sub">Open a previously saved design.</p>
+        <div id="saved-circuits-list"></div>
+        <div class="modal-actions">
+          <button class="modal-btn" data-action="cancel-load">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/script.js" defer></script>
+  </body>
 </html>
