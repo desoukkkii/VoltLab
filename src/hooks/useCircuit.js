@@ -113,25 +113,25 @@ function createComponent(type, x, y) {
     c.height = 70
   } else if (type === 'toggle-switch') {
     c.createPin('output', 0)
-    c.height = 44
+    c.height = 54
     c.value = c.initialValue
   } else if (type === 'push-button') {
     c.createPin('output', 0)
-    c.height = 44
+    c.height = 54
     c.pressed = false
   } else if (type === 'clock') {
     c.createPin('output', 0)
-    c.height = 44
+    c.height = 54
     c.value = c.initialValue
     c.clockRunning = false
   } else if (type === 'led') {
     c.createPin('input', 0)
-    c.width = 80
-    c.height = 44
+    c.width = 90
+    c.height = 54
   } else if (type === 'lamp') {
     c.createPin('input', 0)
-    c.width = 90
-    c.height = 50
+    c.width = 100
+    c.height = 60
     c.color = '#22C55E'
   } else if (type === 'seven-segment') {
     for (let i = 0; i < 4; i++) c.createPin('input', i)

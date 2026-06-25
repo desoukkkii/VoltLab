@@ -131,13 +131,13 @@
     background: #ef4444;
     box-shadow: 0 0 10px rgba(239, 68, 68, 0.55);
   }
-  .ss-a { top: 4px; left: 8px; width: 32px; height: 5px; }
-  .ss-b { top: 8px; right: 4px; width: 5px; height: 28px; }
-  .ss-c { bottom: 8px; right: 4px; width: 5px; height: 28px; }
-  .ss-d { bottom: 4px; left: 8px; width: 32px; height: 5px; }
-  .ss-e { bottom: 8px; left: 4px; width: 5px; height: 28px; }
-  .ss-f { top: 8px; left: 4px; width: 5px; height: 28px; }
-  .ss-g { top: 38px; left: 8px; width: 32px; height: 5px; }
+  .ss-a { top: 5px; left: 10px; width: 36px; height: 6px; }
+  .ss-b { top: 10px; right: 5px; width: 6px; height: 34px; }
+  .ss-c { bottom: 10px; right: 5px; width: 6px; height: 34px; }
+  .ss-d { bottom: 5px; left: 10px; width: 36px; height: 6px; }
+  .ss-e { bottom: 10px; left: 5px; width: 6px; height: 34px; }
+  .ss-f { top: 10px; left: 5px; width: 6px; height: 34px; }
+  .ss-g { top: 46px; left: 10px; width: 36px; height: 6px; }
 
   .led-light {
     width: 22px; height: 22px; border-radius: 50%;

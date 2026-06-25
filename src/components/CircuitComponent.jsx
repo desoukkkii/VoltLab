@@ -80,9 +80,9 @@ function ComponentBody({ comp, circuit }) {
   if (comp.type === 'led') {
     const colorClass = comp.value ? (comp.color === '#22C55E' ? 'green-led' : comp.color === '#0A84FF' ? 'blue-led' : '') : ''
     return (
-      <div className="flex items-center gap-2.5 px-3 py-2">
+      <div className="flex items-center gap-3 px-4 py-2.5">
         <div className={`led-light ${comp.getInputValue(0) ? 'high ' + colorClass : ''}`} />
-        <div className="text-[11.5px] font-semibold text-[#f4f6fb] tracking-[-0.005em] leading-tight">
+        <div className="text-[13px] font-semibold text-[#f4f6fb] tracking-[-0.005em] leading-tight">
           {comp.label}
         </div>
       </div>
@@ -95,9 +95,9 @@ function ComponentBody({ comp, circuit }) {
       comp.color !== '#22C55E' ? 'white-lamp' : ''
     ) : ''
     return (
-      <div className="flex items-center gap-2.5 px-3 py-2">
+      <div className="flex items-center gap-3 px-4 py-2.5">
         <div className={`lamp-light ${comp.getInputValue(0) ? 'high ' + colorClass : ''}`} />
-        <div className="text-[11.5px] font-semibold text-[#f4f6fb] tracking-[-0.005em] leading-tight">
+        <div className="text-[13px] font-semibold text-[#f4f6fb] tracking-[-0.005em] leading-tight">
           {comp.label}
         </div>
       </div>
@@ -109,15 +109,15 @@ function ComponentBody({ comp, circuit }) {
     const pattern = SEVEN_SEG_PATTERNS[val] || [0, 0, 0, 0, 0, 0, 0]
     return (
       <>
-        <div className="relative w-[48px] h-20 mx-auto">
+        <div className="relative w-[56px] h-24 mx-auto">
           {SEG_CLASSES_ARR.map((cls, i) => (
             <div key={cls} className={`ss-segment ${cls} ${pattern[i] ? 'on' : ''}`} />
           ))}
         </div>
-        <div className="text-[11.5px] font-semibold text-[#f4f6fb] tracking-[-0.005em] leading-tight mt-1">
+        <div className="text-[13px] font-semibold text-[#f4f6fb] tracking-[-0.005em] leading-tight mt-1">
           {comp.label}
         </div>
-        <div className="text-[10.5px] font-mono text-[#93a0bb] mt-1.5 text-center tabular-nums">
+        <div className="text-[12px] font-mono text-[#93a0bb] mt-1.5 text-center tabular-nums">
           {val}
         </div>
       </>
@@ -127,12 +127,12 @@ function ComponentBody({ comp, circuit }) {
   if (['toggle-switch', 'push-button', 'clock'].includes(comp.type)) {
     const isHigh = comp.type === 'push-button' ? (comp.pressed ? 1 : 0) : comp.value
     return (
-      <div className="flex items-center gap-2">
-        <div className="text-[11.5px] font-semibold text-[#f4f6fb] tracking-[-0.005em] leading-tight">
+      <div className="flex items-center gap-2.5">
+        <div className="text-[13px] font-semibold text-[#f4f6fb] tracking-[-0.005em] leading-tight">
           {comp.label}
         </div>
         <span
-          className={`inline-block w-[9px] h-[9px] rounded-full ml-2 align-middle transition-all duration-[180ms] ${
+          className={`inline-block w-[12px] h-[12px] rounded-full ml-2 align-middle transition-all duration-[180ms] ${
             isHigh
               ? comp.type === 'clock' && comp.clockRunning
                 ? 'bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.55)] animate-clock-blink'
@@ -149,11 +149,11 @@ function ComponentBody({ comp, circuit }) {
     const sym = circuit.getTypeSymbol(comp.type)
     return (
       <>
-        <div className="text-[11.5px] font-semibold text-[#f4f6fb] tracking-[-0.005em] leading-tight">
+        <div className="text-[13px] font-semibold text-[#f4f6fb] tracking-[-0.005em] leading-tight">
           {comp.label}
         </div>
         {sym && (
-          <div className="text-[13px] font-bold text-[#93a0bb] mt-1 font-mono tracking-[0.02em]">
+          <div className="text-[15px] font-bold text-[#93a0bb] mt-1 font-mono tracking-[0.02em]">
             {sym}
           </div>
         )}
@@ -162,7 +162,7 @@ function ComponentBody({ comp, circuit }) {
   }
 
   return (
-    <div className="text-[11.5px] font-semibold text-[#f4f6fb] tracking-[-0.005em] leading-tight">
+    <div className="text-[13px] font-semibold text-[#f4f6fb] tracking-[-0.005em] leading-tight">
       {comp.label}
     </div>
   )

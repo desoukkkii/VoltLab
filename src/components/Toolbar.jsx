@@ -48,13 +48,13 @@ export default function Toolbar({ circuit, onToggleSidebar, onToggleProperties }
         <button
           onClick={circuit.toggleRun}
           title="Start / stop clock components"
-          className={`inline-flex items-center gap-1.5 px-3 py-[7px] rounded-[8px] text-[13px] font-medium cursor-pointer whitespace-nowrap select-none border transition-all duration-[180ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          className={`inline-flex items-center gap-2 px-4 py-[9px] rounded-[8px] text-[14px] font-medium cursor-pointer whitespace-nowrap select-none border transition-all duration-[180ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
             circuit.isRunning
               ? 'bg-gradient-to-b from-red-500 to-red-700 border-transparent text-white shadow-[0_6px_22px_-10px_rgba(239,68,68,0.7)]'
               : 'bg-gradient-to-b from-blue-400 to-violet-600 border-transparent text-white shadow-[0_6px_22px_-10px_rgba(124,58,237,0.6),inset_0_1px_0_rgba(255,255,255,0.18)] hover:brightness-110'
           } active:translate-y-[1px] active:scale-[0.99]`}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="opacity-85">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="opacity-85">
             <path d="M8 5v14l11-7z" />
           </svg>
           <span className="hidden sm:inline">{circuit.isRunning ? 'Stop' : 'Start Clocks'}</span>
@@ -74,25 +74,25 @@ export default function Toolbar({ circuit, onToggleSidebar, onToggleProperties }
         <div className="flex items-center gap-1 bg-[#161a24] border border-white/[0.07] rounded-[10px] p-[3px]">
           <button
             onClick={circuit.zoomOut}
-            className="inline-flex items-center justify-center p-[4px_9px] text-sm bg-transparent border-none rounded-[8px] text-[#f4f6fb] cursor-pointer whitespace-nowrap transition-all duration-[180ms] hover:bg-white/[0.05]"
+            className="inline-flex items-center justify-center p-[6px_12px] text-sm bg-transparent border-none rounded-[8px] text-[#f4f6fb] cursor-pointer whitespace-nowrap transition-all duration-[180ms] hover:bg-white/[0.05]"
             aria-label="Zoom out"
           >
             &minus;
           </button>
-          <span className="text-xs font-semibold text-[#93a0bb] min-w-[44px] text-center tabular-nums" aria-live="polite">
+          <span className="text-sm font-semibold text-[#93a0bb] min-w-[44px] text-center tabular-nums" aria-live="polite">
             {circuit.zoomLevel}
           </span>
           <button
             onClick={circuit.zoomIn}
-            className="inline-flex items-center justify-center p-[4px_9px] text-sm bg-transparent border-none rounded-[8px] text-[#f4f6fb] cursor-pointer whitespace-nowrap transition-all duration-[180ms] hover:bg-white/[0.05]"
+            className="inline-flex items-center justify-center p-[6px_12px] text-sm bg-transparent border-none rounded-[8px] text-[#f4f6fb] cursor-pointer whitespace-nowrap transition-all duration-[180ms] hover:bg-white/[0.05]"
             aria-label="Zoom in"
           >
             +
           </button>
-          <div className="w-px h-[22px] bg-white/[0.07] mx-1.5" aria-hidden="true" />
+          <div className="w-px h-[24px] bg-white/[0.07] mx-2" aria-hidden="true" />
           <button
             onClick={circuit.fitAll}
-            className="inline-flex items-center gap-1.5 px-3 py-[5px] bg-transparent border border-white/[0.07] rounded-[8px] text-[13px] font-medium text-[#f4f6fb] cursor-pointer whitespace-nowrap transition-all duration-[180ms] hover:bg-white/[0.05] active:translate-y-[1px] active:scale-[0.99]"
+            className="inline-flex items-center gap-1.5 px-4 py-[7px] bg-transparent border border-white/[0.07] rounded-[8px] text-[14px] font-medium text-[#f4f6fb] cursor-pointer whitespace-nowrap transition-all duration-[180ms] hover:bg-white/[0.05] active:translate-y-[1px] active:scale-[0.99]"
             title="Fit to view"
           >
             Fit
@@ -108,9 +108,9 @@ function ToolbarBtn({ onClick, title, svg, children }) {
     <button
       onClick={onClick}
       title={title}
-      className="group inline-flex items-center gap-1.5 px-3 py-[7px] bg-transparent border border-white/[0.07] rounded-[8px] text-[13px] font-medium text-[#f4f6fb] cursor-pointer whitespace-nowrap select-none transition-all duration-[180ms] ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-white/[0.05] hover:border-white/[0.14] active:translate-y-[1px] active:scale-[0.99]"
+      className="group inline-flex items-center gap-2 px-4 py-[9px] bg-transparent border border-white/[0.07] rounded-[8px] text-[14px] font-medium text-[#f4f6fb] cursor-pointer whitespace-nowrap select-none transition-all duration-[180ms] ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-white/[0.05] hover:border-white/[0.14] active:translate-y-[1px] active:scale-[0.99]"
     >
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-85 group-hover:opacity-100">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-85 group-hover:opacity-100">
         {svg}
       </svg>
       <span className="hidden sm:inline">{children}</span>
