@@ -938,6 +938,188 @@ export default function useCircuit() {
     }
   }, [selectedComponent, removeComponent, selectComponent])
 
+  const touchStartRef = useRef(null)
+  const touchLastDist = useRef(null)
+
+  const handleTouchStart = useCallback((e) => {
+    if (e.touches.length === 1) {
+      e.preventDefault()
+      const touch = e.touches[0]
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY }
+      const rect = containerRef.current?.getBoundingClientRect()
+      if (!rect) return
+      const sx = touch.clientX; const sy = touch.clientY
+      const { x: wx, y: wy } = screenToWorld(sx, sy)
+
+      const pin = getPinAt(wx, wy)
+      if (pin && pin.type === 'output') {
+        wireDragSource.current = pin
+        wireDrag.current = { x1: wx, y1: wy, x2: wx, y2: wy }
+        if (wireDragIndicatorRef.current) wireDragIndicatorRef.current.style.display = 'block'
+        if (pin.el) pin.el.classList.add('connecting')
+        return
+      }
+
+      const comp = getComponentAt(wx, wy)
+      if (comp) {
+        if (comp.type === 'toggle-switch') {
+          selectComponent(comp)
+          comp.value = comp.value ? 0 : 1
+          propagateFromComponent(comp)
+          triggerRender()
+          return
+        }
+        if (comp.type === 'push-button') {
+          selectComponent(comp)
+          pressingButton.current = comp
+          comp.pressed = true
+          propagateFromComponent(comp)
+          triggerRender()
+          return
+        }
+        dragReady.current = true
+        dragStartPos.current = { x: wx, y: wy }
+        dragComp.current = comp
+        dragOffset.current = { x: wx - comp.x, y: wy - comp.y }
+        selectComponent(comp)
+      }
+
+      if (activeType) {
+        const created = addComponent(activeType, wx, wy)
+        if (created) {
+          selectComponent(created)
+          setActiveType(null)
+          evaluateAll()
+        }
+        return
+      }
+
+      isPanning.current = true
+      panStart.current = { x: sx - panX.current, y: sy - panY.current }
+      if (containerRef.current) containerRef.current.style.cursor = 'grabbing'
+      selectComponent(null)
+    } else if (e.touches.length === 2) {
+      e.preventDefault()
+      touchLastDist.current = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      )
+    }
+  }, [screenToWorld, getPinAt, getComponentAt, activeType, addComponent, selectComponent, propagateFromComponent, evaluateAll, triggerRender])
+
+  const handleTouchMove = useCallback((e) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0]
+      const rect = containerRef.current?.getBoundingClientRect()
+      if (!rect) return
+      const sx = touch.clientX; const sy = touch.clientY
+      const { x: wx, y: wy } = screenToWorld(sx, sy)
+
+      if (wireDrag.current) {
+        e.preventDefault()
+        if (dragLineRef.current && wireDragSource.current) {
+          const srcPos = wireDragSource.current.getPos()
+          const lineX1 = srcPos.x * zoom.current + panX.current
+          const lineY1 = srcPos.y * zoom.current + panY.current
+          dragLineRef.current.setAttribute('x1', lineX1)
+          dragLineRef.current.setAttribute('y1', lineY1)
+          dragLineRef.current.setAttribute('x2', sx - rect.left)
+          dragLineRef.current.setAttribute('y2', sy - rect.top)
+        }
+        return
+      }
+
+      if (dragReady.current && dragComp.current) {
+        const dx = wx - dragStartPos.current.x
+        const dy = wy - dragStartPos.current.y
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+          isDragging.current = true
+          dragReady.current = false
+          const idx = compsRef.current.indexOf(dragComp.current)
+          if (idx > -1) {
+            compsRef.current.splice(idx, 1)
+            compsRef.current.push(dragComp.current)
+          }
+        }
+      }
+
+      if (isDragging.current && dragComp.current) {
+        e.preventDefault()
+        dragComp.current.x = snap(wx - dragOffset.current.x)
+        dragComp.current.y = snap(wy - dragOffset.current.y)
+        triggerRender()
+        return
+      }
+
+      if (isPanning.current) {
+        e.preventDefault()
+        panX.current = sx - panStart.current.x
+        panY.current = sy - panStart.current.y
+        updateTransform()
+      }
+    }
+
+    if (e.touches.length === 2) {
+      e.preventDefault()
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      )
+      if (touchLastDist.current) {
+        const scale = dist / touchLastDist.current
+        const rect = containerRef.current?.getBoundingClientRect()
+        if (rect) {
+          const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left
+          const my = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top
+          const oldZoom = zoom.current
+          zoom.current = clamp(zoom.current * scale, 0.2, 5)
+          const worldX = (mx - panX.current) / oldZoom
+          const worldY = (my - panY.current) / oldZoom
+          panX.current = mx - worldX * zoom.current
+          panY.current = my - worldY * zoom.current
+          updateTransform()
+        }
+      }
+      touchLastDist.current = dist
+    }
+  }, [screenToWorld, getPinAt, updateTransform, triggerRender])
+
+  const handleTouchEnd = useCallback((e) => {
+    if (wireDrag.current) {
+      const touch = e.changedTouches[0]
+      const { x: wx, y: wy } = screenToWorld(touch.clientX, touch.clientY)
+      const pin = getPinAt(wx, wy)
+      if (pin && pin.type === 'input' && pin.component !== wireDragSource.current?.component) {
+        addWire(wireDragSource.current, pin)
+        propagateFromComponent(wireDragSource.current.component)
+      }
+      if (wireDragSource.current?.el) wireDragSource.current.el.classList.remove('connecting')
+      wireDrag.current = null
+      wireDragSource.current = null
+      if (wireDragIndicatorRef.current) wireDragIndicatorRef.current.style.display = 'none'
+      return
+    }
+    if (pressingButton.current) {
+      pressingButton.current.pressed = false
+      propagateFromComponent(pressingButton.current)
+      pressingButton.current = null
+      triggerRender()
+    }
+    if (dragReady.current) { dragReady.current = false; dragComp.current = null }
+    if (isDragging.current && dragComp.current) {
+      isDragging.current = false
+      dragComp.current = null
+      if (containerRef.current) containerRef.current.style.cursor = ''
+      syncState()
+      return
+    }
+    if (isPanning.current) {
+      isPanning.current = false
+      if (containerRef.current) containerRef.current.style.cursor = ''
+    }
+    touchLastDist.current = null
+  }, [screenToWorld, getPinAt, addWire, propagateFromComponent, syncState, triggerRender])
+
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
@@ -946,14 +1128,20 @@ export default function useCircuit() {
     document.addEventListener('mouseup', handleMouseUp)
     container.addEventListener('wheel', handleWheel, { passive: false })
     document.addEventListener('keydown', handleKeyDown)
+    container.addEventListener('touchstart', handleTouchStart, { passive: false })
+    container.addEventListener('touchmove', handleTouchMove, { passive: false })
+    container.addEventListener('touchend', handleTouchEnd, { passive: false })
     return () => {
       container.removeEventListener('mousedown', handleMouseDown)
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
       container.removeEventListener('wheel', handleWheel)
       document.removeEventListener('keydown', handleKeyDown)
+      container.removeEventListener('touchstart', handleTouchStart)
+      container.removeEventListener('touchmove', handleTouchMove)
+      container.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [handleMouseDown, handleMouseMove, handleMouseUp, handleWheel, handleKeyDown])
+  }, [handleMouseDown, handleMouseMove, handleMouseUp, handleWheel, handleKeyDown, handleTouchStart, handleTouchMove, handleTouchEnd])
 
   useEffect(() => {
     setZoomLevel(Math.round(zoom.current * 100) + '%')

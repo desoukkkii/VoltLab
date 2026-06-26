@@ -1,17 +1,36 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import CircuitComponent from './CircuitComponent'
 
 export default function Workspace({ circuit }) {
+  const [hintDismissed, setHintDismissed] = useState(() => {
+    return sessionStorage.getItem('workspace-hint-dismissed') === 'true'
+  })
+
   useEffect(() => {
     if (circuit.stageRef.current) {
       circuit.stageRef.current.style.transform = `translate(0px,0px) scale(1)`
     }
   }, [])
 
+  useEffect(() => {
+    if (circuit.components.length > 0 && !hintDismissed) {
+      const timer = setTimeout(() => {
+        setHintDismissed(true)
+        sessionStorage.setItem('workspace-hint-dismissed', 'true')
+      }, 4000)
+      return () => clearTimeout(timer)
+    }
+  }, [circuit.components.length, hintDismissed])
+
+  const dismissHint = () => {
+    setHintDismissed(true)
+    sessionStorage.setItem('workspace-hint-dismissed', 'true')
+  }
+
   return (
     <section
       ref={circuit.containerRef}
-      className="relative flex-1 overflow-hidden dot-grid cursor-grab workspace-container min-w-0"
+      className="relative flex-1 overflow-hidden dot-grid cursor-grab workspace-container min-w-0 touch-none"
       aria-label="Circuit workspace"
     >
       <div
@@ -68,10 +87,28 @@ export default function Workspace({ circuit }) {
         </svg>
       </div>
 
-      <div className="absolute left-1/2 bottom-6 -translate-x-1/2 pointer-events-none z-[4] opacity-0 animate-hint-in" aria-hidden="true">
-        <div className="flex flex-col gap-0.5 px-4 py-2.5 bg-[rgba(17,20,28,0.85)] backdrop-blur border border-white/[0.07] rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.35)] text-center max-w-[min(90vw,520px)]">
-          <strong className="text-[12.5px] font-semibold text-[#f4f6fb]">Build something logical.</strong>
-          <span className="text-[11.5px] text-[#93a0bb]">Pick a component from the left, click the canvas to place. Scroll to zoom, drag empty space to pan.</span>
+      <div
+        className={`absolute left-1/2 bottom-6 md:bottom-6 -translate-x-1/2 z-[4] transition-all duration-300 ${
+          hintDismissed
+            ? 'opacity-0 pointer-events-none translate-y-2'
+            : 'opacity-0 animate-hint-in pointer-events-auto'
+        }`}
+        aria-hidden="true"
+      >
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-[rgba(17,20,28,0.85)] backdrop-blur border border-white/[0.07] rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.35)] text-center max-w-[min(90vw,400px)]">
+          <div className="flex-1 min-w-0">
+            <strong className="text-[12.5px] font-semibold text-[#f4f6fb]">Build something logical.</strong>
+            <span className="text-[11.5px] text-[#93a0bb] ml-1">Pick a component, click to place. Scroll to zoom, drag to pan.</span>
+          </div>
+          <button
+            onClick={dismissHint}
+            className="shrink-0 p-1 rounded-full text-[#6b7794] hover:text-[#f4f6fb] hover:bg-white/[0.08] transition-all"
+            aria-label="Dismiss hint"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
       </div>
     </section>

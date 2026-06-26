@@ -1,10 +1,10 @@
 export default function Toolbar({ circuit, onToggleSidebar, onToggleProperties }) {
   return (
-    <header className="flex items-center justify-between gap-1.5 sm:gap-3 px-3 sm:px-5 h-[60px] bg-gradient-to-b from-[rgba(22,26,36,0.95)] to-[rgba(17,20,28,0.95)] backdrop-saturate-[1.4] backdrop-blur-md border-b border-white/[0.07] shrink-0 z-[100]">
+    <header className="hidden md:flex items-center justify-between gap-1.5 sm:gap-3 px-3 sm:px-5 h-[60px] bg-gradient-to-b from-[rgba(22,26,36,0.95)] to-[rgba(17,20,28,0.95)] backdrop-saturate-[1.4] backdrop-blur-md border-b border-white/[0.07] shrink-0 z-[100]">
       <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
         <button
           onClick={onToggleSidebar}
-          className="lg:hidden inline-flex items-center justify-center w-8 h-8 rounded-[8px] bg-transparent border border-white/[0.07] text-[#93a0bb] hover:text-[#f4f6fb] hover:bg-white/[0.05] transition-all shrink-0"
+          className="lg:hidden btn-touch inline-flex items-center justify-center w-8 h-8 rounded-[8px] bg-transparent border border-white/[0.07] text-[#93a0bb] hover:text-[#f4f6fb] hover:bg-white/[0.05] transition-all shrink-0"
           aria-label="Toggle component library"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -31,7 +31,7 @@ export default function Toolbar({ circuit, onToggleSidebar, onToggleProperties }
         </div>
       </div>
 
-      <div className="flex items-center gap-1 flex-wrap" role="toolbar" aria-label="Circuit actions">
+      <div className="flex items-center gap-1" role="toolbar" aria-label="Circuit actions">
         <ToolbarBtn onClick={() => circuit.newCircuit()} title="Start a new circuit (Ctrl+N)" svg={<path d="M12 5v14M5 12h14" />}>
           New
         </ToolbarBtn>
@@ -48,7 +48,7 @@ export default function Toolbar({ circuit, onToggleSidebar, onToggleProperties }
         <button
           onClick={circuit.toggleRun}
           title="Start / stop clock components"
-          className={`inline-flex items-center gap-2 px-4 py-[9px] rounded-[8px] text-[14px] font-medium cursor-pointer whitespace-nowrap select-none border transition-all duration-[180ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          className={`btn-touch inline-flex items-center gap-2 px-3 sm:px-4 py-[9px] rounded-[8px] text-[14px] font-medium cursor-pointer whitespace-nowrap select-none border transition-all duration-[180ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
             circuit.isRunning
               ? 'bg-gradient-to-b from-red-500 to-red-700 border-transparent text-white shadow-[0_6px_22px_-10px_rgba(239,68,68,0.7)]'
               : 'bg-gradient-to-b from-blue-400 to-violet-600 border-transparent text-white shadow-[0_6px_22px_-10px_rgba(124,58,237,0.6),inset_0_1px_0_rgba(255,255,255,0.18)] hover:brightness-110'
@@ -64,17 +64,17 @@ export default function Toolbar({ circuit, onToggleSidebar, onToggleProperties }
       <div className="flex items-center gap-1">
         <button
           onClick={onToggleProperties}
-          className="xl:hidden inline-flex items-center justify-center w-8 h-8 rounded-[8px] bg-transparent border border-white/[0.07] text-[#93a0bb] hover:text-[#f4f6fb] hover:bg-white/[0.05] transition-all shrink-0"
+          className="xl:hidden btn-touch inline-flex items-center justify-center w-8 h-8 rounded-[8px] bg-transparent border border-white/[0.07] text-[#93a0bb] hover:text-[#f4f6fb] hover:bg-white/[0.05] transition-all shrink-0"
           aria-label="Toggle properties panel"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
           </svg>
         </button>
-        <div className="flex items-center gap-1 bg-[#161a24] border border-white/[0.07] rounded-[10px] p-[3px]">
+        <div className="hidden sm:flex items-center gap-1 bg-[#161a24] border border-white/[0.07] rounded-[10px] p-[3px]">
           <button
             onClick={circuit.zoomOut}
-            className="inline-flex items-center justify-center p-[6px_12px] text-sm bg-transparent border-none rounded-[8px] text-[#f4f6fb] cursor-pointer whitespace-nowrap transition-all duration-[180ms] hover:bg-white/[0.05]"
+            className="btn-touch inline-flex items-center justify-center p-[6px_12px] text-sm bg-transparent border-none rounded-[8px] text-[#f4f6fb] cursor-pointer whitespace-nowrap transition-all duration-[180ms] hover:bg-white/[0.05]"
             aria-label="Zoom out"
           >
             &minus;
@@ -84,7 +84,7 @@ export default function Toolbar({ circuit, onToggleSidebar, onToggleProperties }
           </span>
           <button
             onClick={circuit.zoomIn}
-            className="inline-flex items-center justify-center p-[6px_12px] text-sm bg-transparent border-none rounded-[8px] text-[#f4f6fb] cursor-pointer whitespace-nowrap transition-all duration-[180ms] hover:bg-white/[0.05]"
+            className="btn-touch inline-flex items-center justify-center p-[6px_12px] text-sm bg-transparent border-none rounded-[8px] text-[#f4f6fb] cursor-pointer whitespace-nowrap transition-all duration-[180ms] hover:bg-white/[0.05]"
             aria-label="Zoom in"
           >
             +
@@ -92,7 +92,7 @@ export default function Toolbar({ circuit, onToggleSidebar, onToggleProperties }
           <div className="w-px h-[24px] bg-white/[0.07] mx-2" aria-hidden="true" />
           <button
             onClick={circuit.fitAll}
-            className="inline-flex items-center gap-1.5 px-4 py-[7px] bg-transparent border border-white/[0.07] rounded-[8px] text-[14px] font-medium text-[#f4f6fb] cursor-pointer whitespace-nowrap transition-all duration-[180ms] hover:bg-white/[0.05] active:translate-y-[1px] active:scale-[0.99]"
+            className="btn-touch inline-flex items-center gap-1.5 px-4 py-[7px] bg-transparent border border-white/[0.07] rounded-[8px] text-[14px] font-medium text-[#f4f6fb] cursor-pointer whitespace-nowrap transition-all duration-[180ms] hover:bg-white/[0.05] active:translate-y-[1px] active:scale-[0.99]"
             title="Fit to view"
           >
             Fit
@@ -108,7 +108,7 @@ function ToolbarBtn({ onClick, title, svg, children }) {
     <button
       onClick={onClick}
       title={title}
-      className="group inline-flex items-center gap-2 px-4 py-[9px] bg-transparent border border-white/[0.07] rounded-[8px] text-[14px] font-medium text-[#f4f6fb] cursor-pointer whitespace-nowrap select-none transition-all duration-[180ms] ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-white/[0.05] hover:border-white/[0.14] active:translate-y-[1px] active:scale-[0.99]"
+      className="group btn-touch inline-flex items-center gap-2 px-3 sm:px-4 py-[9px] bg-transparent border border-white/[0.07] rounded-[8px] text-[14px] font-medium text-[#f4f6fb] cursor-pointer whitespace-nowrap select-none transition-all duration-[180ms] ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-white/[0.05] hover:border-white/[0.14] active:translate-y-[1px] active:scale-[0.99]"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-85 group-hover:opacity-100">
         {svg}
@@ -117,3 +117,5 @@ function ToolbarBtn({ onClick, title, svg, children }) {
     </button>
   )
 }
+
+

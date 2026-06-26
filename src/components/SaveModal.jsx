@@ -10,7 +10,7 @@ export default function SaveModal({ circuit }) {
       aria-modal="true"
       aria-labelledby="save-modal-title"
     >
-      <div className="bg-gradient-to-b from-[#161a24] to-[#11141c] border border-white/[0.14] rounded-[16px] p-7 w-full max-w-[460px] shadow-[0_20px_60px_rgba(0,0,0,0.5)] animate-modal-in">
+      <div className="bg-gradient-to-b from-[#161a24] to-[#11141c] border border-white/[0.14] rounded-[16px] p-5 sm:p-7 w-full max-w-[460px] mx-4 shadow-[0_20px_60px_rgba(0,0,0,0.5)] animate-modal-in">
         <h2 id="save-modal-title" className="text-lg font-bold tracking-[-0.01em] mb-1.5">Save Circuit</h2>
         <p className="text-[13px] text-[#93a0bb] mb-[18px] leading-relaxed">
           Give your circuit a memorable name. You'll find it again under{' '}
