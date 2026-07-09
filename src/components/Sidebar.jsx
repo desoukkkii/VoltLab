@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { CloseIcon, SearchIcon } from './shared.jsx'
 
 const sections = [
   {
@@ -51,21 +52,18 @@ const sections = [
   },
 ]
 
+const iconRenderers = {
+  io: (c) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>,
+  out: (c) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-8M18 8l4 4-4 4"/><path d="M2 6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>,
+  gate: (c) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4h6a6 6 0 0 1 0 12H6V4z"/><path d="M2 4v12"/><path d="M18 8h4"/><path d="M18 16h4"/></svg>,
+  adv: (c) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>,
+  ex: (c) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/></svg>,
+}
+
 function getIcon(icon, color) {
   const c = color || '#93a0bb'
-  if (icon === 'io') {
-    return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-  }
-  if (icon === 'out') {
-    return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-8M18 8l4 4-4 4"/><path d="M2 6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>
-  }
-  if (icon === 'gate') {
-    return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4h6a6 6 0 0 1 0 12H6V4z"/><path d="M2 4v12"/><path d="M18 8h4"/><path d="M18 16h4"/></svg>
-  }
-  if (icon === 'adv') {
-    return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-  }
-  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/></svg>
+  const render = iconRenderers[icon] || iconRenderers.ex
+  return render(c)
 }
 
 export default function Sidebar({ circuit, onClose }) {
@@ -89,16 +87,12 @@ export default function Sidebar({ circuit, onClose }) {
           <h3 className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#6b7794]">Components</h3>
           {onClose && (
             <button onClick={onClose} className="p-1 rounded-[6px] text-[#6b7794] hover:text-[#f4f6fb] hover:bg-white/[0.05] transition-all btn-touch" aria-label="Close component library">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
+              <CloseIcon />
             </button>
           )}
         </div>
         <div className="relative">
-          <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6b7794] pointer-events-none" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
+          <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6b7794] pointer-events-none" />
           <input
             type="text"
             value={search}
@@ -111,9 +105,7 @@ export default function Sidebar({ circuit, onClose }) {
               onClick={() => setSearch('')}
               className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-[#6b7794] hover:text-[#f4f6fb]"
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
+              <CloseIcon size={12} />
             </button>
           )}
         </div>
@@ -139,11 +131,7 @@ export default function Sidebar({ circuit, onClose }) {
                           circuit.loadExample(item.example)
                           onClose?.()
                         } else {
-                          if (circuit.activeType === item.type) {
-                            circuit.setActiveType(null)
-                          } else {
-                            circuit.setActiveType(item.type)
-                          }
+                          circuit.setActiveType(circuit.activeType === item.type ? null : item.type)
                         }
                       }}
                       className={`group flex items-center gap-2.5 relative px-3 py-[9px] text-[13px] cursor-pointer rounded-[6px] select-none transition-all duration-[180ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${

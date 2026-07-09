@@ -1,29 +1,23 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 
+import { SEG_PATTERNS, SEG_CLASSES } from '../components/shared.jsx'
+
 const GRID_SIZE = 20
 const COMP_WIDTH = 100
 const COMP_HEIGHT = 60
 const PIN_RADIUS = 5
 const MAX_DEPTH = 100
-
-const SEG_PATTERNS = {
-  0: [1, 1, 1, 1, 1, 1, 0],
-  1: [0, 1, 1, 0, 0, 0, 0],
-  2: [1, 1, 0, 1, 1, 0, 1],
-  3: [1, 1, 1, 1, 0, 0, 1],
-  4: [0, 1, 1, 0, 0, 1, 1],
-  5: [1, 0, 1, 1, 0, 1, 1],
-  6: [1, 0, 1, 1, 1, 1, 1],
-  7: [1, 1, 1, 0, 0, 0, 0],
-  8: [1, 1, 1, 1, 1, 1, 1],
-  9: [1, 1, 1, 1, 0, 1, 1],
-}
-const SEG_CLASSES = ['ss-a', 'ss-b', 'ss-c', 'ss-d', 'ss-e', 'ss-f', 'ss-g']
+const SOURCE_TYPES = ['clock', 'toggle-switch', 'push-button']
+const GATE_TYPES = ['and', 'or', 'not', 'nand', 'nor', 'xor', 'xnor']
 
 function snap(v) { return Math.round(v / GRID_SIZE) * GRID_SIZE }
 function uid() { return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7) }
 function dist(x1, y1, x2, y2) { return Math.hypot(x2 - x1, y2 - y1) }
 function clamp(v, min, max) { return Math.max(min, Math.min(max, v)) }
+function pushWireValue(pin, wire) {
+  wire.targetPin.setValue(pin.value)
+  wire.setValue(pin.value)
+}
 
 function evalGate(type, inputs) {
   const a = inputs[0] || 0
@@ -59,17 +53,15 @@ class Pin {
   }
   getPos() {
     const c = this.component
+    const idx = this.index || 0
     if (this.type === 'input') {
-      const idx = this.index || 0
       const total = c.inputPins.length
       const yOff = total > 1 ? ((idx + 0.5) / total) * c.height : c.height / 2
       return { x: c.x, y: c.y + yOff }
-    } else {
-      const idx = this.index || 0
-      const total = c.outputPins.length
-      const yOff = total > 1 ? ((idx + 0.5) / total) * c.height : c.height / 2
-      return { x: c.x + c.width, y: c.y + yOff }
     }
+    const total = c.outputPins.length
+    const yOff = total > 1 ? ((idx + 0.5) / total) * c.height : c.height / 2
+    return { x: c.x + c.width, y: c.y + yOff }
   }
 }
 
@@ -100,79 +92,40 @@ class Wire {
   }
 }
 
+const COMPONENT_CONFIG = {
+  not: { inputs: [0], outputs: [0], height: 50 },
+  and: { inputs: [0, 1], outputs: [0], height: 70 },
+  or: { inputs: [0, 1], outputs: [0], height: 70 },
+  nand: { inputs: [0, 1], outputs: [0], height: 70 },
+  nor: { inputs: [0, 1], outputs: [0], height: 70 },
+  xor: { inputs: [0, 1], outputs: [0], height: 70 },
+  xnor: { inputs: [0, 1], outputs: [0], height: 70 },
+  'toggle-switch': { outputs: [0], height: 54, init: (c) => { c.value = c.initialValue } },
+  'push-button': { outputs: [0], height: 54, init: (c) => { c.pressed = false } },
+  clock: { outputs: [0], height: 54, init: (c) => { c.value = c.initialValue; c.clockRunning = false } },
+  led: { inputs: [0], width: 90, height: 54 },
+  lamp: { inputs: [0], width: 100, height: 60, init: (c) => { c.color = '#22C55E' } },
+  'seven-segment': { inputs: [0, 1, 2, 3], width: 100, height: 120, init: (c) => { c.segments = [0, 0, 0, 0, 0, 0, 0] } },
+  'half-adder': { inputs: [0, 1], outputs: [0, 1], height: 70, width: 110 },
+  'full-adder': { inputs: [0, 1, 2], outputs: [0, 1], height: 90, width: 120 },
+  multiplexer: { inputs: [0, 1, 2], outputs: [0], height: 80, width: 110 },
+  decoder: { inputs: [0, 1], outputs: [0, 1, 2, 3], height: 90, width: 110 },
+  encoder: { inputs: [0, 1, 2, 3], outputs: [0, 1], height: 90, width: 110 },
+}
+
+function createPins(c, cfg) {
+  for (const idx of cfg.inputs || []) c.createPin('input', idx)
+  for (const idx of cfg.outputs || []) c.createPin('output', idx)
+}
+
 function createComponent(type, x, y) {
+  const cfg = COMPONENT_CONFIG[type]
+  if (!cfg) return null
   const c = new Component(type, x, y)
-  if (type === 'not') {
-    c.createPin('input', 0)
-    c.createPin('output', 0)
-    c.height = 50
-  } else if (['and', 'or', 'nand', 'nor', 'xor', 'xnor'].includes(type)) {
-    c.createPin('input', 0)
-    c.createPin('input', 1)
-    c.createPin('output', 0)
-    c.height = 70
-  } else if (type === 'toggle-switch') {
-    c.createPin('output', 0)
-    c.height = 54
-    c.value = c.initialValue
-  } else if (type === 'push-button') {
-    c.createPin('output', 0)
-    c.height = 54
-    c.pressed = false
-  } else if (type === 'clock') {
-    c.createPin('output', 0)
-    c.height = 54
-    c.value = c.initialValue
-    c.clockRunning = false
-  } else if (type === 'led') {
-    c.createPin('input', 0)
-    c.width = 90
-    c.height = 54
-  } else if (type === 'lamp') {
-    c.createPin('input', 0)
-    c.width = 100
-    c.height = 60
-    c.color = '#22C55E'
-  } else if (type === 'seven-segment') {
-    for (let i = 0; i < 4; i++) c.createPin('input', i)
-    c.width = 100
-    c.height = 120
-    c.segments = [0, 0, 0, 0, 0, 0, 0]
-  } else if (type === 'half-adder') {
-    c.createPin('input', 0)
-    c.createPin('input', 1)
-    c.createPin('output', 0)
-    c.createPin('output', 1)
-    c.height = 70
-    c.width = 110
-  } else if (type === 'full-adder') {
-    c.createPin('input', 0)
-    c.createPin('input', 1)
-    c.createPin('input', 2)
-    c.createPin('output', 0)
-    c.createPin('output', 1)
-    c.height = 90
-    c.width = 120
-  } else if (type === 'multiplexer') {
-    c.createPin('input', 0)
-    c.createPin('input', 1)
-    c.createPin('input', 2)
-    c.createPin('output', 0)
-    c.height = 80
-    c.width = 110
-  } else if (type === 'decoder') {
-    c.createPin('input', 0)
-    c.createPin('input', 1)
-    for (let i = 0; i < 4; i++) c.createPin('output', i)
-    c.height = 90
-    c.width = 110
-  } else if (type === 'encoder') {
-    for (let i = 0; i < 4; i++) c.createPin('input', i)
-    c.createPin('output', 0)
-    c.createPin('output', 1)
-    c.height = 90
-    c.width = 110
-  }
+  createPins(c, cfg)
+  if (cfg.width) c.width = cfg.width
+  if (cfg.height) c.height = cfg.height
+  if (cfg.init) cfg.init(c)
   return c
 }
 
@@ -219,8 +172,7 @@ class Component {
     if (index < this.outputPins.length) this.outputPins[index].setValue(val)
   }
   evaluate() {
-    const gateTypes = ['and', 'or', 'not', 'nand', 'nor', 'xor', 'xnor']
-    if (gateTypes.includes(this.type)) {
+    if (GATE_TYPES.includes(this.type)) {
       const inputs = this.inputPins.map(p => p.value)
       this.setOutputValue(0, evalGate(this.type, inputs))
     } else if (this.type === 'toggle-switch') {
@@ -408,7 +360,6 @@ export default function useCircuit() {
   const wireDragSource = useRef(null)
   const pressingButton = useRef(null)
   const simRunning = useRef(false)
-  const simulator = useRef(null)
   const containerRef = useRef(null)
   const stageRef = useRef(null)
   const wireLayerRef = useRef(null)
@@ -422,7 +373,7 @@ export default function useCircuit() {
   }, [])
 
   const triggerRender = useCallback(() => {
-    if (typeof forceRender === 'function') forceRender(n => n + 1)
+    forceRender(n => n + 1)
   }, [])
 
   const screenToWorld = useCallback((sx, sy) => {
@@ -490,8 +441,7 @@ export default function useCircuit() {
       if (!changed) continue
       for (const outPin of current.outputPins) {
         for (const wire of outPin.wires) {
-          wire.targetPin.setValue(outPin.value)
-          wire.setValue(outPin.value)
+          pushWireValue(outPin, wire)
           if ((visitCount[wire.targetPin.component.id] || 0) < 5) {
             queue.push(wire.targetPin.component)
           }
@@ -505,16 +455,14 @@ export default function useCircuit() {
     const ws = wiresRef.current
     const cs = compsRef.current
     for (const w of ws) {
-      w.targetPin.setValue(w.sourcePin.value)
-      w.setValue(w.sourcePin.value)
+      pushWireValue(w.sourcePin, w)
     }
     for (const c of cs) {
-      if (['clock', 'toggle-switch', 'push-button'].includes(c.type)) {
+      if (SOURCE_TYPES.includes(c.type)) {
         c.evaluate()
         if (c.outputPins[0]) {
           for (const w of c.outputPins[0].wires) {
-            w.targetPin.setValue(c.outputPins[0].value)
-            w.setValue(c.outputPins[0].value)
+            pushWireValue(c.outputPins[0], w)
           }
         }
       }
@@ -522,15 +470,14 @@ export default function useCircuit() {
     for (let pass = 0; pass < 5; pass++) {
       let anyChanged = false
       for (const c of cs) {
-        if (['clock', 'toggle-switch', 'push-button'].includes(c.type)) continue
+        if (SOURCE_TYPES.includes(c.type)) continue
         const oldVals = c.outputPins.map(p => p.value)
         c.evaluate()
         for (let i = 0; i < c.outputPins.length; i++) {
           if (c.outputPins[i].value !== oldVals[i]) {
             anyChanged = true
             for (const w of c.outputPins[i].wires) {
-              w.targetPin.setValue(c.outputPins[i].value)
-              w.setValue(c.outputPins[i].value)
+              pushWireValue(c.outputPins[i], w)
             }
           }
         }
@@ -938,14 +885,12 @@ export default function useCircuit() {
     }
   }, [selectedComponent, removeComponent, selectComponent])
 
-  const touchStartRef = useRef(null)
   const touchLastDist = useRef(null)
 
   const handleTouchStart = useCallback((e) => {
     if (e.touches.length === 1) {
       e.preventDefault()
       const touch = e.touches[0]
-      touchStartRef.current = { x: touch.clientX, y: touch.clientY }
       const rect = containerRef.current?.getBoundingClientRect()
       if (!rect) return
       const sx = touch.clientX; const sy = touch.clientY
@@ -1162,7 +1107,7 @@ export default function useCircuit() {
     showLoad, hideLoad, loadCircuit, deleteCircuit,
     newCircuit, loadExample,
     panX, panY, zoom, SEG_PATTERNS, SEG_CLASSES,
-    getTypeSymbol: (type) => getTypeSymbol(type), getPinAt, screenToWorld,
+    getTypeSymbol, getPinAt, screenToWorld,
     triggerRender, forceRender,
   }
 }

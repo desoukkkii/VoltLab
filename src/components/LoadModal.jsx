@@ -1,5 +1,5 @@
 export default function LoadModal({ circuit }) {
-  const names = Object.keys(circuit.savedCircuits)
+  const savedNames = Object.keys(circuit.savedCircuits)
 
   return (
     <div
@@ -13,54 +13,66 @@ export default function LoadModal({ circuit }) {
         <p className="text-[13px] text-[#93a0bb] mb-[18px] leading-relaxed">Open a previously saved design.</p>
         <div
           id="saved-circuits-list"
-          className={`max-h-[380px] overflow-y-auto pr-1 scrollbar-thin ${names.length === 0 ? 'text-center py-9 text-[13px] text-[#6b7794]' : ''}`}
+          className={`max-h-[380px] overflow-y-auto pr-1 scrollbar-thin ${savedNames.length === 0 ? 'text-center py-9 text-[13px] text-[#6b7794]' : ''}`}
         >
-          {names.length === 0 ? (
-            'No saved circuits found.'
+          {savedNames.length === 0 ? (
+            <span>No saved circuits found.</span>
           ) : (
-            names.map(name => {
+            savedNames.map(name => {
               const item = circuit.savedCircuits[name]
               const date = item.savedAt ? new Date(item.savedAt).toLocaleDateString() : ''
               return (
-                <div
+                <SavedCircuitItem
                   key={name}
-                  className="flex items-center justify-between gap-3 px-3.5 py-3 bg-[#0f1218] border border-white/[0.07] rounded-[8px] mb-2 transition-all duration-[180ms] hover:border-blue-400 hover:bg-blue-400/[0.04] hover:-translate-y-px"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[14px] font-semibold text-[#f4f6fb] overflow-hidden text-ellipsis whitespace-nowrap">
-                      {name}
-                    </div>
-                    {date && (
-                      <div className="text-[11.5px] text-[#6b7794] mt-0.5 tabular-nums">{date}</div>
-                    )}
-                  </div>
-                  <div className="flex gap-1.5 shrink-0">
-                    <button
-                      onClick={() => circuit.loadCircuit(item)}
-                      className="px-2.5 py-[5px] text-xs font-semibold bg-transparent border border-white/[0.14] rounded-[6px] text-[#93a0bb] cursor-pointer transition-all duration-[180ms] hover:border-blue-400 hover:text-[#f4f6fb]"
-                    >
-                      Load
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); circuit.deleteCircuit(name) }}
-                      className="px-2.5 py-[5px] text-xs font-semibold bg-transparent border border-white/[0.14] rounded-[6px] text-[#93a0bb] cursor-pointer transition-all duration-[180ms] hover:border-red-500 hover:text-red-500 hover:bg-red-500/8"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
+                  name={name}
+                  date={date}
+                  onLoad={() => circuit.loadCircuit(item)}
+                  onDelete={() => circuit.deleteCircuit(name)}
+                />
               )
             })
           )}
         </div>
         <div className="flex gap-2 justify-end mt-[22px]">
           <button
+            type="button"
             onClick={() => circuit.hideLoad()}
             className="px-[18px] py-[9px] bg-transparent border border-white/[0.14] rounded-[8px] text-[13px] font-semibold text-[#f4f6fb] cursor-pointer transition-all duration-[180ms] hover:bg-white/[0.06] active:translate-y-[1px]"
           >
             Close
           </button>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function SavedCircuitItem({ name, date, onLoad, onDelete }) {
+  return (
+    <div className="flex items-center justify-between gap-3 px-3.5 py-3 bg-[#0f1218] border border-white/[0.07] rounded-[8px] mb-2 transition-all duration-[180ms] hover:border-blue-400 hover:bg-blue-400/[0.04] hover:-translate-y-px">
+      <div className="flex-1 min-w-0">
+        <div className="text-[14px] font-semibold text-[#f4f6fb] overflow-hidden text-ellipsis whitespace-nowrap">
+          {name}
+        </div>
+        {date && (
+          <div className="text-[11.5px] text-[#6b7794] mt-0.5 tabular-nums">{date}</div>
+        )}
+      </div>
+      <div className="flex gap-1.5 shrink-0">
+        <button
+          type="button"
+          onClick={onLoad}
+          className="px-2.5 py-[5px] text-xs font-semibold bg-transparent border border-white/[0.14] rounded-[6px] text-[#93a0bb] cursor-pointer transition-all duration-[180ms] hover:border-blue-400 hover:text-[#f4f6fb]"
+        >
+          Load
+        </button>
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onDelete() }}
+          className="px-2.5 py-[5px] text-xs font-semibold bg-transparent border border-white/[0.14] rounded-[6px] text-[#93a0bb] cursor-pointer transition-all duration-[180ms] hover:border-red-500 hover:text-red-500 hover:bg-red-500/8"
+        >
+          Delete
+        </button>
       </div>
     </div>
   )

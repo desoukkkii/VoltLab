@@ -13,16 +13,14 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [propertiesOpen, setPropertiesOpen] = useState(false)
 
+  const toggleSidebar = useCallback(() => setSidebarOpen(o => !o), [])
+  const toggleProperties = useCallback(() => setPropertiesOpen(o => !o), [])
   const closeSidebar = useCallback(() => setSidebarOpen(false), [])
   const closeProperties = useCallback(() => setPropertiesOpen(false), [])
 
   return (
-    <div className="relative flex flex-col h-dvh z-[1] bg-ambient-gradient">
-      <Toolbar
-        circuit={circuit}
-        onToggleSidebar={() => setSidebarOpen(o => !o)}
-        onToggleProperties={() => setPropertiesOpen(o => !o)}
-      />
+    <div className="relative flex flex-col h-dvh bg-ambient-gradient">
+      <Toolbar circuit={circuit} onToggleSidebar={toggleSidebar} onToggleProperties={toggleProperties} />
       <main className="flex flex-1 overflow-hidden min-h-0 pb-[56px] md:pb-0">
         <div className="hidden lg:flex shrink-0">
           <Sidebar circuit={circuit} />
@@ -48,11 +46,7 @@ export default function App() {
           </div>
         )}
       </main>
-      <BottomBar
-        circuit={circuit}
-        onToggleSidebar={() => setSidebarOpen(o => !o)}
-        onToggleProperties={() => setPropertiesOpen(o => !o)}
-      />
+      <BottomBar circuit={circuit} onToggleSidebar={toggleSidebar} onToggleProperties={toggleProperties} />
       {circuit.showSaveModal && <SaveModal circuit={circuit} />}
       {circuit.showLoadModal && <LoadModal circuit={circuit} />}
     </div>

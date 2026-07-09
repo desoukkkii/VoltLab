@@ -8,7 +8,7 @@ export default function Workspace({ circuit }) {
 
   useEffect(() => {
     if (circuit.stageRef.current) {
-      circuit.stageRef.current.style.transform = `translate(0px,0px) scale(1)`
+      circuit.stageRef.current.style.transform = 'translate(0px,0px) scale(1)'
     }
   }, [])
 
@@ -45,14 +45,10 @@ export default function Workspace({ circuit }) {
           aria-hidden="true"
         >
           {circuit.wires.map(wire => {
-            const src = wire.sourcePin.getPos()
             const tgt = wire.targetPin.getPos()
-            const dx = tgt.x - src.x
-            const cpx = src.x + dx * 0.5
-            const d = `M${src.x},${src.y} C${cpx},${src.y} ${cpx},${tgt.y} ${tgt.x},${tgt.y}`
             return (
               <g key={wire.id}>
-                <path d={d} className={`wire-line ${wire.value ? 'high' : 'low'}`} />
+                <path d={wire.getPath()} className={`wire-line ${wire.value ? 'high' : 'low'}`} />
                 <circle cx={tgt.x} cy={tgt.y} r="3" className={`wire-dot ${wire.value ? 'high' : 'low'}`} fill={wire.value ? '#22c55e' : 'rgba(255,255,255,0.22)'} />
               </g>
             )

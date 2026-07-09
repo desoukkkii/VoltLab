@@ -1,4 +1,4 @@
-# Digital Logic Circuit Simulator
+# VoltLab — Digital Logic Circuit Simulator
 
 An interactive digital logic circuit simulator built with **React 18**, **Vite**, and **Tailwind CSS v3**. Design, simulate, and visualize digital circuits directly in your browser.
 

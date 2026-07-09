@@ -3,6 +3,9 @@ import { useState } from 'react'
 export default function SaveModal({ circuit }) {
   const [name, setName] = useState('')
 
+  const handleSave = () => circuit.doSave(name)
+  const handleKeyDown = (e) => { if (e.key === 'Enter') handleSave() }
+
   return (
     <div
       className="fixed inset-0 bg-[rgba(5,7,12,0.65)] backdrop-blur-md flex items-center justify-center p-5 z-[1000] animate-overlay-in"
@@ -20,7 +23,7 @@ export default function SaveModal({ circuit }) {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') circuit.doSave(name) }}
+          onKeyDown={handleKeyDown}
           placeholder="e.g. 4-bit counter"
           autoComplete="off"
           autoFocus
@@ -31,13 +34,15 @@ export default function SaveModal({ circuit }) {
         </p>
         <div className="flex gap-2 justify-end mt-[22px]">
           <button
+            type="button"
             onClick={() => circuit.hideSave()}
             className="px-[18px] py-[9px] bg-transparent border border-white/[0.14] rounded-[8px] text-[13px] font-semibold text-[#f4f6fb] cursor-pointer transition-all duration-[180ms] hover:bg-white/[0.06] active:translate-y-[1px]"
           >
             Cancel
           </button>
           <button
-            onClick={() => circuit.doSave(name)}
+            type="button"
+            onClick={handleSave}
             className="px-[18px] py-[9px] bg-gradient-to-b from-blue-400 to-violet-600 border-transparent rounded-[8px] text-[13px] font-semibold text-white cursor-pointer shadow-[0_6px_22px_-10px_rgba(124,58,237,0.6)] transition-all duration-[180ms] hover:brightness-110 active:translate-y-[1px]"
           >
             Save

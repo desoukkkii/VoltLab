@@ -1,3 +1,5 @@
+import { MenuIcon, PlayIcon, PlusIcon } from './shared.jsx'
+
 export default function Toolbar({ circuit, onToggleSidebar, onToggleProperties }) {
   return (
     <header className="hidden md:flex items-center justify-between gap-1.5 sm:gap-3 px-3 sm:px-5 h-[60px] bg-gradient-to-b from-[rgba(22,26,36,0.95)] to-[rgba(17,20,28,0.95)] backdrop-saturate-[1.4] backdrop-blur-md border-b border-white/[0.07] shrink-0 z-[100]">
@@ -7,9 +9,7 @@ export default function Toolbar({ circuit, onToggleSidebar, onToggleProperties }
           className="lg:hidden btn-touch inline-flex items-center justify-center w-8 h-8 rounded-[8px] bg-transparent border border-white/[0.07] text-[#93a0bb] hover:text-[#f4f6fb] hover:bg-white/[0.05] transition-all shrink-0"
           aria-label="Toggle component library"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
+          <MenuIcon />
         </button>
         <span className="grid place-items-center w-9 h-9 rounded-[10px] bg-blue-400/8 border border-blue-400/18 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] shrink-0" aria-hidden="true">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -25,7 +25,7 @@ export default function Toolbar({ circuit, onToggleSidebar, onToggleProperties }
         </span>
         <div className="min-w-0">
           <h1 className="text-[15px] font-bold tracking-[-0.015em] text-[#f4f6fb] whitespace-nowrap flex items-baseline gap-2">
-            Logiq
+            VoltLab
             <span className="text-xs font-medium text-[#93a0bb] hidden md:inline">Circuit Simulator</span>
           </h1>
         </div>
@@ -54,9 +54,7 @@ export default function Toolbar({ circuit, onToggleSidebar, onToggleProperties }
               : 'bg-gradient-to-b from-blue-400 to-violet-600 border-transparent text-white shadow-[0_6px_22px_-10px_rgba(124,58,237,0.6),inset_0_1px_0_rgba(255,255,255,0.18)] hover:brightness-110'
           } active:translate-y-[1px] active:scale-[0.99]`}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="opacity-85">
-            <path d="M8 5v14l11-7z" />
-          </svg>
+          <PlayIcon className="opacity-85" />
           <span className="hidden sm:inline">{circuit.isRunning ? 'Stop' : 'Start Clocks'}</span>
         </button>
       </div>
@@ -117,5 +115,3 @@ function ToolbarBtn({ onClick, title, svg, children }) {
     </button>
   )
 }
-
-
