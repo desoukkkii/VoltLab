@@ -1,6 +1,12 @@
 # VoltLab — Digital Logic Circuit Simulator
 
-An interactive digital logic circuit simulator built with **React 18**, **Vite**, and **Tailwind CSS v3**. Design, simulate, and visualize digital circuits directly in your browser.
+[![Live Demo](https://img.shields.io/badge/Live_Demo-volt--lab-seven.vercel.app-blue?style=for-the-badge&logo=vercel)](https://volt-lab-seven.vercel.app/)
+
+An interactive digital logic circuit simulator built with **React 18**, **Vite**, and **Tailwind CSS v3**. Design, simulate, and visualize digital circuits directly in your browser — no backend required.
+
+## Live Demo
+
+**[volt-lab-seven.vercel.app](https://volt-lab-seven.vercel.app/)**
 
 ## Features
 
@@ -8,10 +14,11 @@ An interactive digital logic circuit simulator built with **React 18**, **Vite**
 - **Drag & Drop** — Click a component in the sidebar, then click the workspace to place it. Drag placed components to reposition. 5px drag threshold prevents accidental moves.
 - **Wire Connections** — Click an output pin and drag to an input pin to create a wire. Wires auto-route with bezier curves, show signal state with color (green = HIGH, dim = LOW).
 - **Simulation Engine** — Reactive evaluation propagates signal changes through the circuit instantly. Clock components tick independently when started. Feedback loops (e.g., SR latch) are handled with visit-count limiting.
-- **Zoom & Pan** — Scroll to zoom, drag the background to pan, or use the zoom controls and Fit button.
+- **Zoom & Pan** — Scroll to zoom, drag the background to pan, or use the zoom controls and Fit All button.
 - **Properties Panel** — Select any component to edit its label, clock speed, initial value, or color.
 - **Save & Load** — Save circuits to `localStorage` and load them later. Saved circuits persist across page refreshes.
 - **Example Circuits** — Pre-built examples: Half Adder, Full Adder, XOR from basic gates, SR Latch, 4-bit Counter demo.
+- **Responsive Design** — Works on desktop, tablet, and mobile with touch support for placing, dragging, and wiring components.
 
 ## Getting Started
 
@@ -49,10 +56,6 @@ npm run preview
 
 Serves the production build locally for testing.
 
-## Deploy
-
-The `dist/` folder after `npm run build` contains a fully static site. Deploy it to any static hosting provider (Vercel, Netlify, GitHub Pages, Cloudflare Pages, etc.).
-
 ## Project Structure
 
 ```
@@ -76,24 +79,24 @@ The `dist/` folder after `npm run build` contains a fully static site. Deploy it
         ├── CircuitComponent.jsx — Per-type component visuals and pins
         ├── PropertiesPanel.jsx — Context-sensitive property editor
         ├── SaveModal.jsx       — Save circuit dialog
-        └── LoadModal.jsx       — Load/delete circuit dialog
+        ├── LoadModal.jsx       — Load/delete circuit dialog
+        └── shared.jsx          — Shared constants, SVG icons, gate config
 ```
 
 ## Architecture
 
-### Classes (in `useCircuit.js`)
+### Core Classes (`useCircuit.js`)
 
 - **`Pin`** — Input or output terminal on a component. Stores value, tracks connected wires.
 - **`Wire`** — Connection between an output pin and an input pin. SVG bezier path, color-coded by signal state.
 - **`Component`** — Single class for all circuit elements (gates, I/O, displays). A `createComponent()` factory sets pin layout per type.
-- **`createComponent()`** — Factory that returns a configured `Component` with correct pins for the given type string.
 
 ### Simulation Engine
 
 1. User action changes a component's output (toggle, button press, clock tick, etc.)
-2. `circuit.propagateFromComponent()` enqueues the changed component and its transitive fan-out
+2. `circuit.propagateFromComponent()` enqueues the changed component and its transitive fan-out via BFS traversal
 3. Each component in the queue is re-evaluated; if its output changed, the new value is pushed through connected wires to downstream components
-4. `circuit.evaluateAll()` does a full re-evaluation: syncs wire values, evaluates input components, then iterates gates for up to 5 passes (or until stable)
+4. `circuit.evaluateAll()` does a full re-evaluation: syncs wire values, evaluates sources, then iterates gates for up to 5 passes (or until stable)
 
 ### Data Persistence
 
